@@ -7,44 +7,45 @@ from pytz import timezone
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from discord.ext import commands
+from discord.utils import get
 from keep_alive import keep_alive #import method from py file
 
-client = commands.Bot(command_prefix = ';') #prefix
+client = commands.Bot(command_prefix = ';',help_command=None) #prefix
 locale.setlocale(locale.LC_ALL, '') # for comma separation
 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 company_logos =[siba_img,siba_img_landscape]
 flag_times_pdt = [4,11,13,14,15]
+flag_difference = []
 
+# #get guild channel id
+# async def scheduled_function(): 
+#   c = client.get_channel(838627115326636082)
+#   await c.send('TEST0')
 
-#get guild channel id
-async def scheduled_function(): 
-  c = client.get_channel(838627115326636082)
-  await c.send('TEST0')
-
-def calculate_time():
-    date_time_end = datetime.datetime.combine(datetime.date.today(), datetime.time(4,00,00)) #get end time 
-    date_time_now = datetime.datetime.combine(datetime.date.today(), datetime.time(datetime.datetime.now(timezone('US/Pacific')).hour,00,00)) #get time now
-    date_difference = date_time_end - date_time_now 
-    diff_hours = date_difference.total_seconds() / 3600
-    print(diff_hours)
+# def calculate_time():
+#   date_time_now = datetime.datetime.combine(datetime.date.today(), datetime.time(datetime.datetime.now(timezone('US/Pacific')).hour)) #get time now
+#   #get time difference related to each flag time
+#   for fr_time in flag_times_pdt:
+#       date_time_end = datetime.datetime.combine(datetime.date.today(), datetime.time(fr_time)) #get end time 
+#       date_difference = date_time_end - date_time_now 
+#       diff_hours = date_difference.total_seconds() / 3600
+#       flag_difference.append(diff_hours)
+#       print(diff_hours)
 
 #when run
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;commands'))
-    scheduler = AsyncIOScheduler()
-
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;help'))
     
-    #get date time
-    calculate_time()
+    # scheduler = AsyncIOScheduler()
+    # #get date time
+    # calculate_time()
+    # #run from monday-sunday 4am, 11am, 1pm, 2pm, 3pm
+    # scheduler.add_job(scheduled_function, 'cron', day_of_week='mon-sun', hour=22, minute = 51)
+    # scheduler.start()
 
-    #run from monday-sunday 4am, 11am, 1pm, 2pm, 3pm
-    scheduler.add_job(scheduled_function, 'cron', day_of_week='mon-sun', hour=22, minute = 51)
-
-
-    scheduler.start()
     print('Bot is deployed...')
 
 #flag race reminder
@@ -58,10 +59,10 @@ async def on_ready():
 
 #Help
 @client.command()
-async def commands(ctx):
+async def help(ctx):
   embed = discord.Embed(
     title = 'Help',
-    description = '씨바-bot Help Library. These are the following commands everyone can use in this server currently. (The prefix to use commands is ";")',
+    description = '씨바-bot Help Library. These are the following commands everyone can use in this server currently. (The prefix to use commands is ";") Note that the commands are case-sensitive.',
     colour = discord.Colour.purple()
   )
   embed.set_footer(text='Powered by 씨발')
@@ -72,9 +73,9 @@ async def commands(ctx):
   embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g ;sale 1800000000 4 1', inline=True)
   embed.add_field(name=';reset',value='(Disabled currently) Calculate time until now and reset time', inline=False)
   embed.add_field(name=';logo [number]',value='View company logo', inline=True)
-  embed.add_field(name=';reminder',value='View reminder for boss runs and GPQ', inline=True)
 
   embed.add_field(name='Party Commands',value='\u200b', inline=False)
+  embed.add_field(name=';schedule',value='View reminder for boss runs and GPQ', inline=True)
   embed.add_field(name=';party1',value='Display party1 (Chilly line)', inline=True)
   embed.add_field(name=';party2',value='Display party2 (Dan line)', inline=True)
   embed.add_field(name=';party3',value='Display party3 (Kevin line)', inline=True)
@@ -151,10 +152,10 @@ async def party3(ctx):
 
 #embed party 1/2 schedules
 @client.command()
-async def reminder(ctx):
+async def schedule(ctx):
   embed = discord.Embed(
-    title = 'Schedule Reminder',
-    description = 'Below is the usual times Chilly line and Dan line will run.',
+    title = 'Schedule',
+    description = 'Below are the usual times Chilly line and Dan line will run.',
     colour = discord.Colour.blue()
   )
   embed.set_footer(text='Powered by 씨발')
@@ -164,8 +165,30 @@ async def reminder(ctx):
   embed.add_field(name='GPQ [Sunday]: ',value='7:00PM (PST) | 10:00 PM (EST) | 12:00 PM (AEST)', inline=False)
   await ctx.send(embed=embed)
 
-#====Other Random Commands====~
 
+#reminder boss run ping
+@client.command(name='run')
+@commands.has_any_role('Developer','Board of Directors','administrator')
+async def ping_party(ctx):
+
+  await reminder(ctx)
+  team1 = get(ctx.guild.roles, name = 'Team 1')
+  team2 = get(ctx.guild.roles, name = 'Team 2')
+  
+  embed = discord.Embed(
+    title = 'Run Reminder',
+    description = 'Don\'t forget we are running later tonight. Refer up above for the usual run times for each party. Message your respective party leaders if there are any changes that need to be made.',
+    colour = discord.Colour.red()
+  )
+  embed.set_footer(text='Powered by 씨발')
+  embed.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
+  await ctx.send(embed = embed)
+  await ctx.send(f"{team1.mention,team2.mention}")
+
+
+
+
+#====Other Random Commands====~
 #logo
 @client.command()
 async def logo(ctx,logo=1):
