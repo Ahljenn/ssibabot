@@ -76,9 +76,7 @@ async def help(ctx):
 
   embed.add_field(name='Party Commands',value='\u200b', inline=False)
   embed.add_field(name=';schedule',value='View reminder for boss runs and GPQ', inline=True)
-  embed.add_field(name=';party1',value='Display party1 (Chilly line)', inline=True)
-  embed.add_field(name=';party2',value='Display party2 (Dan line)', inline=True)
-  embed.add_field(name=';party3',value='Display party3 (Kevin line)', inline=True)
+  embed.add_field(name=';parties',value='View all the parties along with each runner', inline=True)
   await ctx.send(embed=embed)
 
 #calculate sale
@@ -102,60 +100,28 @@ async def reset(ctx):
     divmod(elapsed_time.total_seconds,60)
     await ctx.send(now)
 
-#Party 1 (Chilly) Line
 @client.command()
-async def party1(ctx):
+async def parties(ctx):
   embed = discord.Embed(
-    title = 'Chilly Line',
-    description = 'Members of Chilly line',
-    colour = discord.Colour.purple()
+    title = 'Runners',
+    description = 'Below are the following parties a long with each member',
+    colour = discord.Colour.red()
   )
   embed.set_footer(text='Powered by 씨발')
-  embed.set_thumbnail(url=siba_img)
+  embed.set_thumbnail(url='https://static.wikia.nocookie.net/maplestory/images/6/68/Mob_Will_%283%29.png/revision/latest?cb=20180127074010')
   embed.set_author(name='씨바-bot')
-  embed.add_field(name='Member 1: [Leader]',value='Chilly', inline=False)
-  embed.add_field(name='Member 2:',value='Eric', inline=True)
-  embed.add_field(name='Member 3:',value='Harry', inline=True)
-  embed.add_field(name='Member 4:',value='AJ', inline=True)
+  embed.add_field(name='Chilly Line',value = 'Chilly, Eric, Harry, AJ',inline=True)
+  embed.add_field(name='Dan Line',value = 'Dan, Yena, Seb, Jay',inline=True)
+  embed.add_field(name='Kevin Line',value = 'Kevin (Traitor)',inline=True) 
   await ctx.send(embed=embed)
 
-#Party 2 (Chilly) Line
-@client.command()
-async def party2(ctx):
-  embed = discord.Embed(
-    title = 'Dan Line',
-    description = 'Members of Dan line',
-    colour = discord.Colour.purple()
-  )
-  embed.set_footer(text='Powered by 씨발')
-  embed.set_thumbnail(url=siba_img)
-  embed.set_author(name='씨바-bot')
-  embed.add_field(name='Member 1: [Leader]',value='Dan', inline=False)
-  embed.add_field(name='Member 2:',value='Jay', inline=True)
-  embed.add_field(name='Member 3:',value='Yena', inline=True)
-  embed.add_field(name='Member 4:',value='Seb', inline=True)
-  await ctx.send(embed=embed)
-
-#Party 3 Kevin
-@client.command()
-async def party3(ctx):
-  embed = discord.Embed(
-    title = 'Kevin Line',
-    description = 'Member(s) of Kevin line',
-    colour = discord.Colour.purple()
-  )
-  embed.set_footer(text='Powered by 씨발')
-  embed.set_thumbnail(url=siba_img)
-  embed.set_author(name='씨바-bot')
-  embed.add_field(name='Member 1: ',value='Kevin', inline=False)
-  await ctx.send(embed=embed)
 
 #embed party 1/2 schedules
 @client.command()
 async def schedule(ctx):
   embed = discord.Embed(
     title = 'Schedule',
-    description = 'Below are the usual times Chilly line and Dan line will run.',
+    description = 'Below are the usual times Chilly line and Dan line will run. The run times are tentative - subject to change.',
     colour = discord.Colour.blue()
   )
   embed.set_footer(text='Powered by 씨발')
@@ -171,21 +137,19 @@ async def schedule(ctx):
 @commands.has_any_role('Developer','Board of Directors','administrator')
 async def ping_party(ctx):
 
-  await reminder(ctx)
+  await schedule(ctx)
   team1 = get(ctx.guild.roles, name = 'Team 1')
   team2 = get(ctx.guild.roles, name = 'Team 2')
   
   embed = discord.Embed(
     title = 'Run Reminder',
-    description = 'Don\'t forget we are running later tonight. Refer up above for the usual run times for each party. Message your respective party leaders if there are any changes that need to be made.',
+    description = 'Don\'t forget we are running later tonight. Refer up above for the usual run times for each party. The run times are tentative - subject to change. Message your respective party leaders if there are any changes that need to be made.',
     colour = discord.Colour.red()
   )
   embed.set_footer(text='Powered by 씨발')
   embed.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
   await ctx.send(embed = embed)
   await ctx.send(f"{team1.mention,team2.mention}")
-
-
 
 
 #====Other Random Commands====~
@@ -212,13 +176,6 @@ async def on_message(message):
     if message.content.lower() in ['ssibal','sibal']:
       await message.channel.send('noma')
     await client.process_commands(message)
-
-
-
-
-
-
-
 
 
 
