@@ -15,11 +15,20 @@ locale.setlocale(locale.LC_ALL, '') # for comma separation
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 company_logos =[siba_img,siba_img_landscape]
+flag_times_pdt = [4,11,13,14,15]
+
 
 #get guild channel id
 async def scheduled_function(): 
   c = client.get_channel(838627115326636082)
   await c.send('TEST0')
+
+def calculate_time():
+    date_time_end = datetime.datetime.combine(datetime.date.today(), datetime.time(4,00,00)) #get end time 
+    date_time_now = datetime.datetime.combine(datetime.date.today(), datetime.time(datetime.datetime.now(timezone('US/Pacific')).hour,00,00)) #get time now
+    date_difference = date_time_end - date_time_now 
+    diff_hours = date_difference.total_seconds() / 3600
+    print(diff_hours)
 
 #when run
 @client.event
@@ -27,9 +36,11 @@ async def on_ready():
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;commands'))
     scheduler = AsyncIOScheduler()
 
+    
+    #get date time
+    calculate_time()
+
     #run from monday-sunday 4am, 11am, 1pm, 2pm, 3pm
-    now = datetime.datetime.now(timezone('US/Pacific'))
-    print(now)
     scheduler.add_job(scheduled_function, 'cron', day_of_week='mon-sun', hour=22, minute = 51)
 
 
@@ -167,15 +178,6 @@ async def logo(ctx,logo=1):
     await ctx.send(embed=embed)
   except: #number outside of ValueError
     await ctx.send('Error, there are currently only '+ str(len(company_logos)) + ' company logos to view.')
-
-# @client.command()
-# async def logo2(ctx):
-#   embed = discord.Embed(
-#     colour = discord.Colour.purple()
-#   )
-#   embed.set_footer(text='Powered by 씨발')
-#   embed.set_image(url=siba_img_landscape)
-#   await ctx.send(embed=embed)
 
 
 #if specific message

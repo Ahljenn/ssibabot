@@ -10,6 +10,7 @@ discord = "^1.0.1"
 flask = "^2.0.0"
 youtube-dl = "^2021.5.16"
 apscheduler = "^3.7.0"
+pytz = "^2021.1"
 
 [tool.poetry.dev-dependencies]
 

@@ -251,7 +251,7 @@ python-versions = "*"
 version = "2021.5.16"
 
 [metadata]
-content-hash = "67cbbe2a11add9919dffcb9e1e96b6c7e64224ac3a472c1090d179403a0deb35"
+content-hash = "378c64e865102ade7a553babf017e39bf950aa869caf94472a2f4a6b014a77b0"
 python-versions = "^3.8"
 
 [metadata.files]
