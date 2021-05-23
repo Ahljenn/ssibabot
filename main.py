@@ -59,12 +59,12 @@ async def help(ctx):
 
   embed.add_field(name='General Commands',value='\u200b', inline=False)
   embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g ;sale 1800000000 4 1', inline=True)
-  embed.add_field(name=';logo [number]',value='View company logo', inline=True)
 
-  embed.add_field(name='Party Commands',value='\u200b', inline=False)
+  embed.add_field(name='씨바-Server Commands',value='\u200b', inline=False)
+  embed.add_field(name=';logo [number]',value='View company logo', inline=True)
   embed.add_field(name=';schedule',value='View reminder for boss runs and GPQ', inline=True)
   embed.add_field(name=';parties',value='View all the parties along with each runner', inline=True)
-  embed.add_field(name=';ping',value='Weekly boss run ping (Board of Director\'s only)', inline=True)
+  embed.add_field(name=';ping',value='Weekly boss run ping (Party Leaders Only)', inline=True)
   await ctx.send(embed=embed)
 
 #calculate sale
