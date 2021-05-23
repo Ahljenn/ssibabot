@@ -3,56 +3,46 @@ import locale
 import os
 import math
 import datetime
-import asyncio
-from discord.ext import commands
+from discord.ext import tasks, commands
 from discord.utils import get
-from keep_alive import keep_alive #import method from py file
-
+from keep_alive import keep_alive 
 client = commands.Bot(command_prefix = ';',help_command=None) #prefix
 locale.setlocale(locale.LC_ALL, '') # for comma separation
 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 company_logos =[siba_img,siba_img_landscape]
-flag_times_pdt = [3,10,12,13,14]
+flag_times_utc = [11,18,20,21,22]
 
 time = datetime.datetime.now
 
 #function timer to send msg at set times
+@tasks.loop(minutes=1.0)
 async def timer():
-
-  await client.wait_until_ready()
-
   msg_sent = False
+  if any(time().hour == flag for flag in flag_times_utc) and time().minute == 57:
+    if not msg_sent:
+      channel = client.get_channel(838627115326636082)
+      flag_role = get(channel.guild.roles, name = 'Developer')
 
-  while not client.is_closed():
-    if any(time().hour == flag for flag in flag_times_pdt) and time().minute == 57:
-      if not msg_sent:
-        print('display timed message')
-        channel = client.get_channel(838627115326636082)
-        flag_role = get(channel.guild.roles, name = 'Developer')
-
-        embed = discord.Embed(
-          title = 'Flag Race',
-          description = 'It is almost time for flag race, get ready.',
-          colour = discord.Colour.blue()
-        )
-        embed.set_footer(text='Powered by 씨발')
-        embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
-        embed.set_author(name='씨바-bot')
-        await channel.send(f'{flag_role.mention}',embed=embed)
-        msg_sent = True
+      embed = discord.Embed(
+        title = 'Flag Race',
+        description = 'Flag race is starting soon, get ready.',
+        colour = discord.Colour.blue()
+      )
+      embed.set_footer(text='Powered by 씨발')
+      embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
+      embed.set_author(name='씨바-bot')
+      await channel.send(f'{flag_role.mention}',embed=embed)
+      msg_sent = True
     else:
       msg_sent = False
-
-  await asyncio.sleep(1)
-
 
 #when run
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;help'))
-    client.loop.create_task(timer())
+    timer.start()
     print('Bot is deployed...')
 
 #Help
@@ -135,7 +125,8 @@ async def ping_party(ctx):
   )
   embed.set_footer(text='Powered by 씨발')
   embed.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
-  await ctx.send(f'{team1.mention,team2.mention}',embed=embed)
+  await ctx.send(embed=embed)
+  await ctx.send(f'{team1.mention,team2.mention}')
 
 
 #====Other Random Commands====~
