@@ -3,49 +3,52 @@ import locale
 import os
 import math
 import datetime
-from discord.ext import tasks, commands
+import asyncio
+from discord.ext import commands
 from discord.utils import get
 from keep_alive import keep_alive 
-client = commands.Bot(command_prefix = ';',help_command=None) #prefix
-locale.setlocale(locale.LC_ALL, '') # for comma separation
+client = commands.Bot(command_prefix = ';',help_command=None) 
+locale.setlocale(locale.LC_ALL, '') 
 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 company_logos =[siba_img,siba_img_landscape]
-flag_times_utc = [11,18,20,21,22]
+flag_times_utc = [11,18,20,21,22] #time-1 for 57min
 
 time = datetime.datetime.now
 
 #function timer to send msg at set times
-@tasks.loop(minutes=1.0)
 async def timer():
   msg_sent = False
-  if any(time().hour == flag for flag in flag_times_utc) and time().minute == 57:
-    if not msg_sent:
-      channel = client.get_channel(838627115326636082)
-      flag_role = get(channel.guild.roles, name = 'Developer')
+  while not client.is_closed():
+    if any(time().hour == flag for flag in flag_times_utc) and time().minute == 57:
+      if not msg_sent:
+        channel = client.get_channel(838627115326636082)
+        flag_role = get(channel.guild.roles, name = 'Developer')
 
-      embed = discord.Embed(
-        title = 'Flag Race',
-        description = 'Flag race is starting soon, get ready.',
-        colour = discord.Colour.blue()
-      )
-      embed.set_footer(text='Powered by 씨발')
-      embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
-      embed.set_author(name='씨바-bot')
-      await channel.send(f'{flag_role.mention}',embed=embed)
-      msg_sent = True
-    else:
-      msg_sent = False
+        embed = discord.Embed(
+          title = 'Flag Race',
+          description = 'Flag race is starting soon, get ready.',
+          colour = discord.Colour.blue(),
+          timestamp=datetime.datetime.utcnow()
+        )
+        embed.set_footer(text='Powered by 씨발')
+        embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
+        embed.set_author(name='씨바-bot')
+        await channel.send(f'{flag_role.mention}',embed=embed)
+        msg_sent = True
+        await asyncio.sleep(60)
+      else:
+        msg_sent = False
+    await asyncio.sleep(1) 
 
-#when run
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;help'))
-    timer.start()
+    client.loop.create_task(timer())
     print('Bot is deployed...')
 
-#Help
+#display all available functions
 @client.command()
 async def help(ctx):
   embed = discord.Embed(
@@ -77,6 +80,7 @@ async def sale(ctx,capital=1,pty=1,mvp=0):
   except ValueError:
     await ctx.send('Invalid parameters used. (Type ;help for more information)')
 
+#display runners
 @client.command()
 async def parties(ctx):
   embed = discord.Embed(
@@ -89,11 +93,10 @@ async def parties(ctx):
   embed.set_author(name='씨바-bot')
   embed.add_field(name='Chilly Line',value = 'Chilly, Eric, Harry, AJ',inline=True)
   embed.add_field(name='Dan Line',value = 'Dan, Yena, Seb, Jay',inline=True)
-  embed.add_field(name='Kevin Line',value = 'Kevin (Traitor)',inline=True) 
+  embed.add_field(name='Kevin Line',value = 'Kevin :skull:',inline=True) 
   await ctx.send(embed=embed)
 
-
-#embed party 1/2 schedules
+#display schedules
 @client.command()
 async def schedule(ctx):
   embed = discord.Embed(
@@ -107,7 +110,6 @@ async def schedule(ctx):
   embed.add_field(name='Boss Runs [Saturday]: ',value='8:30PM (PST) | 11:30 PM (EST) | 10:30AM (AEST)', inline=False)
   embed.add_field(name='GPQ [Sunday]: ',value='7:00PM (PST) | 10:00 PM (EST) | 11:00AM (AEST)', inline=False)
   await ctx.send(embed=embed)
-
 
 #reminder boss run ping
 @client.command(name='ping')
@@ -129,7 +131,8 @@ async def ping_party(ctx):
   await ctx.send(f'{team1.mention,team2.mention}')
 
 
-#====Other Random Commands====~
+#====Other Random Commands====#
+
 #logo
 @client.command()
 async def logo(ctx,logo=1):
@@ -143,54 +146,23 @@ async def logo(ctx,logo=1):
   except: #number outside of ValueError
     await ctx.send('Error, there are currently only '+ str(len(company_logos)) + ' company logos to view.')
 
-
-#if specific message
+#check message
 @client.event
 async def on_message(message):
   if message.author != client.user: #if not the bot
-    if message.content.lower() in ['gary','kevin','yena','kev','sus']:
+    if message.content.lower() in ['gary','yena','sus']:
       await message.channel.send('sus')
+    if message.content.lower() in ['kevin','kev']:
+      await message.channel.send('<:kevin:845474836271595530>')
     if message.content.lower() in ['ssibal','sibal']:
       await message.channel.send('noma')
     await client.process_commands(message)
 
-
+#send lone msg841120354020884480
+@client.command()
+async def _msg(ctx):
+  channel = client.get_channel(841120354020884480)
+  await channel.send('yes oppa >< uwu ;; ㅠㅠㅠㅠㅠㅠㅠㅠ')
 
 keep_alive() #using uptimerobot.com
 client.run(os.environ['token'])
-
-
-
-
-
-
-
-
-
-
-#outside functions#
-#=====================================================#
-# #get guild channel id
-# async def scheduled_function(): 
-#   c = client.get_channel(838627115326636082)
-#   await c.send('TEST0')
-
-# def calculate_time():
-#   date_time_now = datetime.datetime.combine(datetime.date.today(), datetime.time(datetime.datetime.now(timezone('US/Pacific')).hour)) #get time now
-#   #get time difference related to each flag time
-#   for fr_time in flag_times_pdt:
-#       date_time_end = datetime.datetime.combine(datetime.date.today(), datetime.time(fr_time)) #get end time 
-#       date_difference = date_time_end - date_time_now 
-#       diff_hours = date_difference.total_seconds() / 3600
-#       flag_difference.append(diff_hours)
-#       print(diff_hours)
-
-
-#inside client event#
-#======================================================#
-    # scheduler = AsyncIOScheduler()
-    # #get date time
-    # calculate_time()
-    # #run from monday-sunday 4am, 11am, 1pm, 2pm, 3pm
-    # scheduler.add_job(scheduled_function, 'cron', day_of_week='mon-sun', hour=22, minute = 51)
-    # scheduler.start()
