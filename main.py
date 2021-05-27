@@ -20,20 +20,37 @@ time = datetime.datetime.now
 #function timer to send msg at set times
 async def timer():
   msg_sent = False
-  while not client.is_closed():
-    if any(time().hour == flag for flag in flag_times_utc) and time().minute == 57:
-      if not msg_sent:
-        channel = client.get_channel(838627115326636082)
-        flag_role = get(channel.guild.roles, name = 'Developer')
 
+  channel = client.get_channel(838627115326636082)
+  flag_role = get(channel.guild.roles, name = 'Developer')
+
+  while not client.is_closed():
+    if any(time().hour == flag for flag in flag_times_utc) and time().minute == 50:
+      if not msg_sent:
         embed = discord.Embed(
           title = 'Flag Race',
-          description = 'Flag race is starting soon, get ready.',
+          description = 'Flag race is starting soon in 10 minutes, get ready.',
           colour = discord.Colour.blue(),
           timestamp=datetime.datetime.utcnow()
         )
         embed.set_footer(text='Powered by 씨발')
         embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
+        embed.set_author(name='씨바-bot')
+        await channel.send(f'{flag_role.mention}',embed=embed)
+        msg_sent = True
+        await asyncio.sleep(60)
+      else:
+        msg_sent = False
+    if any(time().hour == flag for flag in flag_times_utc) and time().minute == 59:
+      if not msg_sent:
+        embed = discord.Embed(
+          title = 'Flag Race',
+          description = 'Flag race will be starting soon, get ready.',
+          colour = discord.Colour.red(),
+          timestamp=datetime.datetime.utcnow()
+        )
+        embed.set_footer(text='Powered by 씨발')
+        embed.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
         embed.set_author(name='씨바-bot')
         await channel.send(f'{flag_role.mention}',embed=embed)
         msg_sent = True
