@@ -20,16 +20,15 @@ time = datetime.datetime.now
 #function timer to send msg at set times
 async def timer():
   msg_sent = False
-
-  channel = client.get_channel(838627115326636082)
-  flag_role = get(channel.guild.roles, name = 'Developer')
-
   while not client.is_closed():
     if any(time().hour == flag for flag in flag_times_utc) and time().minute == 50:
       if not msg_sent:
-        embed = discord.Embed(
+        channel = client.get_channel(838627115326636082)
+        flag_role = get(channel.guild.roles, name = 'Developer')
+
+        embed = discord.Embed( #first embed for first ping
           title = 'Flag Race',
-          description = 'Flag race will be starting in 10 minutes, get ready.',
+          description = 'Flag race will be starting in about 10 minutes.',
           colour = discord.Colour.blue(),
           timestamp=datetime.datetime.utcnow()
         )
@@ -37,24 +36,19 @@ async def timer():
         embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
         embed.set_author(name='씨바-bot')
         await channel.send(f'{flag_role.mention}',embed=embed)
-        msg_sent = True
-        await asyncio.sleep(60)
-      else:
-        msg_sent = False
-    if any(time().hour == flag for flag in flag_times_utc) and time().minute == 59:
-      if not msg_sent:
-        embed = discord.Embed(
+        await asyncio.sleep(540) #wait 9 minutes
+
+        embed2 = discord.Embed( #second embed for second ping
           title = 'Flag Race',
-          description = 'Flag race will be starting shortly, make sure you are in a map where you can recieve the invitation.',
+          description = 'Flag race is starting soon, get ready. Make sure you are in a map where you can recieve the invitiation.',
           colour = discord.Colour.red(),
           timestamp=datetime.datetime.utcnow()
         )
-        embed.set_footer(text='Powered by 씨발')
-        embed.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
-        embed.set_author(name='씨바-bot')
-        await channel.send(f'{flag_role.mention}',embed=embed)
+        embed2.set_footer(text='Powered by 씨발')
+        embed2.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
+        embed2.set_author(name='씨바-bot')
+        await channel.send(f'{flag_role.mention}',embed=embed2)
         msg_sent = True
-        await asyncio.sleep(60)
       else:
         msg_sent = False
     await asyncio.sleep(1) 
@@ -123,8 +117,8 @@ async def checklist(ctx):
     colour = discord.Colour.blue()
   )
   embed.set_footer(text='Powered by 씨발')
-  embed.set_thumbnail(url='https://cdn0.iconfinder.com/data/icons/stomatology-dental/500/vi99_3_check_list_cartoon_object_checklist_clipboard_document-512.png')
-  embed.add_field(name='Please check the following items:',value='<:verified:847677650750144542>Legion setup\n<:verified:847677650750144542>Link skills\n<:verified:847677650750144542>Hyper skills\n<:verified:847677650750144542>Hyper stats\n<:verified:847677650750144542>Buff freezers\n<:verified:847677650750144542>Familiars')
+  embed.set_thumbnail(url='https://cdn0.iconfinder.com/data/icons/thin-line-color-2/21/27-512.png')
+  embed.add_field(name='Please check the following items:',value='<:verified:847677650750144542>Legion setup\n<:verified:847677650750144542>Link skills\n<:verified:847677650750144542>Hyper skills\n<:verified:847677650750144542>Hyper stats\n<:verified:847677650750144542>Buff freezers\n<:verified:847677650750144542>Familiars\n<:verified:847677650750144542>Check pets/pet food')
   await ctx.send(embed=embed)
 
 
@@ -139,7 +133,7 @@ async def schedule(ctx):
   embed.set_footer(text='Powered by 씨발')
   embed.set_thumbnail(url='https://students.wustl.edu/wp-content/uploads/2018/08/Schedule.png')
   embed.set_author(name='씨바-bot')
-  embed.add_field(name='Boss Runs [Saturday]: ',value='8:30PM (PST) | 11:30 PM (EST) | 10:30AM (Sunday: AEST)', inline=False)
+  embed.add_field(name='Boss Runs [Friday/Saturday]: ',value='8:30PM (PST) | 11:30 PM (EST) | 10:30AM (1 day ahead: AEST)', inline=False)
   embed.add_field(name='GPQ [Sunday]: ',value='7:00PM (PST) | 10:00 PM (EST) | 11:00AM (Monday: AEST)', inline=False)
   await ctx.send(embed=embed)
 
