@@ -21,14 +21,14 @@ time = datetime.datetime.now
 async def timer():
   msg_sent = False
   while not client.is_closed():
-    if any(time().hour == flag for flag in flag_times_utc) and time().minute == 57:
+    if any(time().hour == flag for flag in flag_times_utc) and time().minute == 50:
       if not msg_sent:
         channel = client.get_channel(838627115326636082)
         flag_role = get(channel.guild.roles, name = 'Developer')
 
-        embed = discord.Embed(
+        embed = discord.Embed( #first embed for first ping
           title = 'Flag Race',
-          description = 'Flag race is starting soon, get ready.',
+          description = 'Flag race will be starting in about 10 minutes.',
           colour = discord.Colour.blue(),
           timestamp=datetime.datetime.utcnow()
         )
@@ -36,8 +36,19 @@ async def timer():
         embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
         embed.set_author(name='씨바-bot')
         await channel.send(f'{flag_role.mention}',embed=embed)
+        await asyncio.sleep(540) #wait 9 minutes
+
+        embed2 = discord.Embed( #second embed for second ping
+          title = 'Flag Race',
+          description = 'Flag race is starting soon, get ready. Make sure you are in a map where you can recieve the invitiation.',
+          colour = discord.Colour.red(),
+          timestamp=datetime.datetime.utcnow()
+        )
+        embed2.set_footer(text='Powered by 씨발')
+        embed2.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
+        embed2.set_author(name='씨바-bot')
+        await channel.send(f'{flag_role.mention}',embed=embed2)
         msg_sent = True
-        await asyncio.sleep(60)
       else:
         msg_sent = False
     await asyncio.sleep(1) 
@@ -48,7 +59,7 @@ async def on_ready():
     client.loop.create_task(timer())
     print('Bot is deployed...')
 
-#display all available functions
+#help function
 @client.command()
 async def help(ctx):
   embed = discord.Embed(
@@ -62,6 +73,7 @@ async def help(ctx):
 
   embed.add_field(name='General Commands',value='\u200b', inline=False)
   embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g ;sale 1800000000 4 1', inline=True)
+  embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=True)
 
   embed.add_field(name='씨바-Server Commands',value='\u200b', inline=False)
   embed.add_field(name=';logo [number]',value='View company logo', inline=True)
@@ -96,6 +108,20 @@ async def parties(ctx):
   embed.add_field(name='Kevin Line',value = 'Kevin :skull:',inline=True) 
   await ctx.send(embed=embed)
 
+#display prerun checklist
+@client.command()
+async def checklist(ctx):
+  embed = discord.Embed(
+    title = 'Pre-run Checklist',
+    description = 'Make sure everything is set and ready to go, prior to the boss runs.',
+    colour = discord.Colour.blue()
+  )
+  embed.set_footer(text='Powered by 씨발')
+  embed.set_thumbnail(url='https://cdn0.iconfinder.com/data/icons/thin-line-color-2/21/27-512.png')
+  embed.add_field(name='Please check the following items:',value='<:verified:847677650750144542>Legion setup\n<:verified:847677650750144542>Link skills\n<:verified:847677650750144542>Hyper skills\n<:verified:847677650750144542>Hyper stats\n<:verified:847677650750144542>Buff freezers\n<:verified:847677650750144542>Familiars\n<:verified:847677650750144542>Check pets/pet food')
+  await ctx.send(embed=embed)
+
+
 #display schedules
 @client.command()
 async def schedule(ctx):
@@ -107,8 +133,8 @@ async def schedule(ctx):
   embed.set_footer(text='Powered by 씨발')
   embed.set_thumbnail(url='https://students.wustl.edu/wp-content/uploads/2018/08/Schedule.png')
   embed.set_author(name='씨바-bot')
-  embed.add_field(name='Boss Runs [Saturday]: ',value='8:30PM (PST) | 11:30 PM (EST) | 10:30AM (AEST)', inline=False)
-  embed.add_field(name='GPQ [Sunday]: ',value='7:00PM (PST) | 10:00 PM (EST) | 11:00AM (AEST)', inline=False)
+  embed.add_field(name='Boss Runs [Friday/Saturday]: ',value='8:30PM (PST) | 11:30 PM (EST) | 10:30AM (1 day ahead: AEST)', inline=False)
+  embed.add_field(name='GPQ [Sunday]: ',value='7:00PM (PST) | 10:00 PM (EST) | 11:00AM (Monday: AEST)', inline=False)
   await ctx.send(embed=embed)
 
 #reminder boss run ping
@@ -116,7 +142,7 @@ async def schedule(ctx):
 @commands.has_any_role('Developer','Board of Directors','administrator')
 async def ping_party(ctx):
 
-  await schedule(ctx)
+  await checklist(ctx)
   team1 = get(ctx.guild.roles, name = 'Team 1')
   team2 = get(ctx.guild.roles, name = 'Team 2')
   
