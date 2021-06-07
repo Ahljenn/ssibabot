@@ -59,7 +59,7 @@ async def on_ready():
     client.loop.create_task(timer())
     print('Bot is deployed...')
 
-#display all available functions
+#help function
 @client.command()
 async def help(ctx):
   embed = discord.Embed(
