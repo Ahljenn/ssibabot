@@ -184,11 +184,6 @@ async def on_message(message):
       await message.channel.send('noma')
     await client.process_commands(message)
 
-#send lone msg841120354020884480
-@client.command()
-async def _msg(ctx):
-  channel = client.get_channel(841120354020884480)
-  await channel.send('yes oppa >< uwu ;; ㅠㅠㅠㅠㅠㅠㅠㅠ')
 
 keep_alive() #using uptimerobot.com
 client.run(os.environ['token'])
