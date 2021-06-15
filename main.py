@@ -13,7 +13,7 @@ locale.setlocale(locale.LC_ALL, '')
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 company_logos =[siba_img,siba_img_landscape]
-flag_times_utc = [11,18,20,21,22] #time-1 for 57min
+flag_times_utc = [18,20,21,22] #time-1 for 57min
 
 time = datetime.datetime.now
 
@@ -23,8 +23,8 @@ async def timer():
   while not client.is_closed():
     if any(time().hour == flag for flag in flag_times_utc) and time().minute == 50:
       if not msg_sent:
-        channel = client.get_channel(838627115326636082)
-        flag_role = get(channel.guild.roles, name = 'Developer')
+        channel = client.get_channel(530284491319672853)
+        flag_role = get(channel.guild.roles, name = 'Flag Race')
 
         embed = discord.Embed( #first embed for first ping
           title = 'Flag Race',
