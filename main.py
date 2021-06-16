@@ -12,8 +12,7 @@ locale.setlocale(locale.LC_ALL, '')
 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
-company_logos =[siba_img,siba_img_landscape]
-flag_times_utc = [11,18,20,21,22] #time-1 for 57min
+flag_times_utc = [11,18,20,21,22] #time-1 for 1 hour before
 
 time = datetime.datetime.now
 
@@ -35,7 +34,7 @@ async def timer():
         embed.set_footer(text='Powered by 씨발')
         embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
         embed.set_author(name='씨바-bot')
-        await channel.send(f'{flag_role.mention}',embed=embed)
+        await channel.send(f'{flag_role.mention} in 10',embed=embed)
         await asyncio.sleep(540) #wait 9 minutes
 
         embed2 = discord.Embed( #second embed for second ping
@@ -47,7 +46,7 @@ async def timer():
         embed2.set_footer(text='Powered by 씨발')
         embed2.set_thumbnail(url='https://webstockreview.net/images/cone-clipart-triangle-8.png')
         embed2.set_author(name='씨바-bot')
-        await channel.send(f'{flag_role.mention}',embed=embed2)
+        await channel.send(f'{flag_role.mention} in 1',embed=embed2)
         msg_sent = True
       else:
         msg_sent = False
@@ -118,7 +117,8 @@ async def checklist(ctx):
   )
   embed.set_footer(text='Powered by 씨발')
   embed.set_thumbnail(url='https://cdn0.iconfinder.com/data/icons/thin-line-color-2/21/27-512.png')
-  embed.add_field(name='Please check the following items:',value='<:verified:847677650750144542>Legion setup\n<:verified:847677650750144542>Link skills\n<:verified:847677650750144542>Hyper skills\n<:verified:847677650750144542>Hyper stats\n<:verified:847677650750144542>Buff freezers\n<:verified:847677650750144542>Familiars\n<:verified:847677650750144542>Check pets/pet food')
+  embed.add_field(name='Please check the following items:',value='<:verified:847677650750144542> Legion setup\n<:verified:847677650750144542> Link skills\n<:verified:847677650750144542> Hyper skills\n<:verified:847677650750144542> Hyper stats\n<:verified:847677650750144542> Buff freezers\n<:verified:847677650750144542> Familiars\n<:verified:847677650750144542> Check pets/pet food\n<:verified:847677650750144542> Bossing equips/rings',inline=False)
+  embed.add_field(name='Also, check these additional items:',value='\n<:verified:847677650750144542> Green bind \n<:verified:847677650750144542> Nodes\n<:verified:847677650750144542> Links\n<:verified:847677650750144542> Legion\n<:verified:847677650750144542> Monster park extreme potions\n<:verified:847677650750144542> Guild skills\n<:verified:847677650750144542> Guild blessing\n<:verified:847677650750144542> Ursus\n<:verified:847677650750144542> Cold winter/HT/apple/tengu buffs\n<:verified:847677650750144542> Candied apples\n<:verified:847677650750144542> Level 250/275 Fame buff\n<:verified:847677650750144542> Boss rush pots\n<:verified:847677650750144542> Alchemy stat potion I - X\n<:verified:847677650750144542> MVP superpower\n<:verified:847677650750144542> Echo\n<:verified:847677650750144542> Familiars setup\n<:verified:847677650750144542> Weapon tempering',inline=False)
   await ctx.send(embed=embed)
 
 
@@ -165,12 +165,9 @@ async def logo(ctx,logo=1):
   embed = discord.Embed(
     colour = discord.Colour.purple()
   )
-  try:
-    embed.set_footer(text='Powered by 씨발')
-    embed.set_image(url=company_logos[logo-1])
-    await ctx.send(embed=embed)
-  except: #number outside of ValueError
-    await ctx.send('Error, there are currently only '+ str(len(company_logos)) + ' company logos to view.')
+  embed.set_footer(text='Powered by 씨발')
+  embed.set_image(url=siba_img_landscape)
+  await ctx.send(embed=embed)
 
 #check message
 @client.event
@@ -182,8 +179,20 @@ async def on_message(message):
       await message.channel.send('<:kevin:845474836271595530>')
     if message.content.lower() in ['ssibal','sibal']:
       await message.channel.send('noma')
+    if message.content in ['<:Wall:818644951012474901>']:
+      await message.channel.send('<:Wall:818644951012474901>')
     await client.process_commands(message)
 
+
+@client.command()
+async def test_embed(ctx): #test f-string for flag race ping
+  embed = discord.Embed(
+    title = 'Test'
+  )
+  channel = client.get_channel(845758630263259146)
+  role = get(channel.guild.roles, name = 'Developer')
+  await channel.send(f'{role.mention} in 1',embed=embed)
+  
 
 keep_alive() #using uptimerobot.com
 client.run(os.environ['token'])
