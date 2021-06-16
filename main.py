@@ -13,7 +13,7 @@ locale.setlocale(locale.LC_ALL, '')
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 company_logos =[siba_img,siba_img_landscape]
-flag_times_utc = [18,20,21,22] #time-1 for 57min
+flag_times_utc = [11,18,20,21,22] #time-1 for 57min
 
 time = datetime.datetime.now
 
