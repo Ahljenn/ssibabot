@@ -16,6 +16,8 @@ flag_times_utc = [11,18,20,21,22] #time-1 for 1 hour before
 
 time = datetime.datetime.now
 
+#weekly reset is wednesday, 5pm pst
+
 #function timer to send msg at set times
 async def timer():
   msg_sent = False
