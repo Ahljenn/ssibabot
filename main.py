@@ -65,7 +65,7 @@ async def on_ready():
 async def help(ctx):
   embed = discord.Embed(
     title = 'Help',
-    description = '씨바-bot Help Library. These are the following commands everyone can use in this server currently. (The prefix to use commands is ";") Note that the commands are case-sensitive.',
+    description = '씨바-bot Help Library. These are the following commands everyone can use in this server currently. (The prefix to use commands is ";") Note that the commands are case-sensitive. More functionalities will be added overtime.',
     colour = discord.Colour.purple()
   )
   embed.set_footer(text='Powered by 씨발')
@@ -75,12 +75,6 @@ async def help(ctx):
   embed.add_field(name='General Commands',value='\u200b', inline=False)
   embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g ;sale 1800000000 4 1', inline=True)
   embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=True)
-
-  embed.add_field(name='씨바-Server Commands',value='\u200b', inline=False)
-  embed.add_field(name=';logo [number]',value='View company logo', inline=True)
-  embed.add_field(name=';schedule',value='View reminder for boss runs and GPQ', inline=True)
-  embed.add_field(name=';parties',value='View all the parties along with each runner', inline=True)
-  embed.add_field(name=';ping',value='Weekly boss run ping (Party Leaders Only)', inline=True)
   await ctx.send(embed=embed)
 
 #calculate sale
@@ -92,22 +86,6 @@ async def sale(ctx,capital=1,pty=1,mvp=0):
     await ctx.send(f'{amt:,} meso(s) each')
   except ValueError:
     await ctx.send('Invalid parameters used. (Type ;help for more information)')
-
-#display runners
-@client.command()
-async def parties(ctx):
-  embed = discord.Embed(
-    title = 'Runners',
-    description = 'Below are the following parties a long with each member',
-    colour = discord.Colour.red()
-  )
-  embed.set_footer(text='Powered by 씨발')
-  embed.set_thumbnail(url='https://static.wikia.nocookie.net/maplestory/images/6/68/Mob_Will_%283%29.png/revision/latest?cb=20180127074010')
-  embed.set_author(name='씨바-bot')
-  embed.add_field(name='Chilly Line',value = 'Chilly, Eric, Harry, AJ',inline=True)
-  embed.add_field(name='Dan Line',value = 'Dan, Yena, Seb, Jay',inline=True)
-  embed.add_field(name='Kevin Line',value = 'Kevin :skull:',inline=True) 
-  await ctx.send(embed=embed)
 
 #display prerun checklist
 @client.command()
@@ -158,18 +136,6 @@ async def ping_party(ctx):
   await ctx.send(f'{team1.mention,team2.mention}')
 
 
-#====Other Random Commands====#
-
-#logo
-@client.command()
-async def logo(ctx,logo=1):
-  embed = discord.Embed(
-    colour = discord.Colour.purple()
-  )
-  embed.set_footer(text='Powered by 씨발')
-  embed.set_image(url=siba_img_landscape)
-  await ctx.send(embed=embed)
-
 #check message
 @client.event
 async def on_message(message):
@@ -184,16 +150,5 @@ async def on_message(message):
       await message.channel.send('<:Wall:818644951012474901>')
     await client.process_commands(message)
 
-
-@client.command()
-async def test_embed(ctx): #test f-string for flag race ping
-  embed = discord.Embed(
-    title = 'Test'
-  )
-  channel = client.get_channel(845758630263259146)
-  role = get(channel.guild.roles, name = 'Developer')
-  await channel.send(f'{role.mention} in 1',embed=embed)
-  
-
-keep_alive() #using uptimerobot.com
+keep_alive() 
 client.run(os.environ['token'])
