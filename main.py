@@ -12,13 +12,10 @@ locale.setlocale(locale.LC_ALL, '')
 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
-flag_times_utc = [11,18,20,21,22] #time-1 for 1 hour before
+flag_times_utc = [11,18,20,21,22] #time-1 
 
 time = datetime.datetime.now
 
-#weekly reset is wednesday, 5pm pst
-
-#function timer to send msg at set times
 async def timer():
   msg_sent = False
   while not client.is_closed():
@@ -27,7 +24,7 @@ async def timer():
         channel = client.get_channel(530284491319672853)
         flag_role = get(channel.guild.roles, name = 'Flag Race')
 
-        embed = discord.Embed( #first embed for first ping
+        embed = discord.Embed( #first embed for ping 1
           title = 'Flag Race',
           description = 'Flag race will be starting in about 10 minutes.',
           colour = discord.Colour.blue(),
@@ -39,7 +36,7 @@ async def timer():
         await channel.send(f'{flag_role.mention} in 10',embed=embed)
         await asyncio.sleep(540) #wait 9 minutes
 
-        embed2 = discord.Embed( #second embed for second ping
+        embed2 = discord.Embed( #second embed for ping 2
           title = 'Flag Race',
           description = 'Flag race is starting soon, get ready. Make sure you are in a map where you can recieve the invitiation.',
           colour = discord.Colour.red(),
