@@ -13,8 +13,8 @@ locale.setlocale(locale.LC_ALL, '')
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 flag_times_utc = [11,18,20,21,22] #time-1 
+equip_names = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
 time = datetime.datetime.now
-
 
 async def get_value(file_path, flame_score):
   """Returns expected number of flames required given the file_path and flame_score."""
@@ -22,8 +22,7 @@ async def get_value(file_path, flame_score):
                                     index_col=0,
                                     names=['Flame score','Expected number of flames'])
   return math.floor(expected_values.iat[flame_score,0])
-equip_names = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
-
+  
 @client.command()
 async def flame(ctx, name='', flame_score=0):
   """Returns average eternal flames to beat given desired equip and key."""
@@ -64,7 +63,7 @@ async def flame_info(ctx):
   embed.set_footer(text='Powered by 씨발')
   embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/697998173888708652/706341428896203144/image0.png')
   embed.add_field(name='Equip (exact) names',value='abso, book, eyepatch, arcane, cra, gollux, pap, sw',inline=False)
-  embed.add_field(name='Ranges for each equip',value='gollux: 0-115\nsw: 0-120\npap: 0-160\ncra:0-160\nabso: 0-180\nbook:0-180\neyepatch0-180\narcane:0-210',inline=False)
+  embed.add_field(name='Ranges for each equip',value='gollux: 0-115\nsw: 0-120\npap: 0-160\ncra: 0-160\nabso: 0-180\nbook: 0-180\neyepatch: 0-180\narcane: 0-210',inline=False)
   await ctx.send(embed=embed)
 
 #provide maximum range for each equip
@@ -128,23 +127,30 @@ async def help(ctx):
   embed.set_author(name='씨바-bot')
 
   embed.add_field(name='General Commands',value='\u200b', inline=False)
-  embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g !sale 1800000000 4 1', inline=True)
+  embed.add_field(name=';sale <meso amount> <party size> <mvp status>',value='Calculate sale given initial amount, number of members, and mvp status e.g !sale 1800000000 4 1', inline=False)
   embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=True)
-  embed.add_field(name=';flame-info',value='View information for flame commands.',inline=False)
-  embed.add_field(name=';flame <equip> <score>',value='Prints average number of flames required to beat score.')
+  embed.add_field(name=';flame-info',value='View information for flame commands.',inline=True)
+  embed.add_field(name=';flame <equip> <score>',value='Prints average number of eternal flames required to beat score.')
   await ctx.send(embed=embed)
 
-#calculate sale
-#make this an embed
 @client.command()
-async def sale(ctx,capital=1,pty=1,mvp=0):
+async def sale(ctx,capital,pty=1,mvp=0):
   """Returns the amount of capital for a given sale with initial amount, party members, and mvp status."""
+  capital = int(capital.replace(',',''))
   try:
-    if capital < 0:
+    if capital <= 0 or pty <= 1:
       raise ValueError
     tax = 0.03 if mvp else 0.05
-    amt = math.floor(capital * (1-  tax) / (pty - 0.05))
-    await ctx.send(f'{amt:,} meso(s) each')
+    amt = math.floor(capital * (1 -  tax) / (pty - 0.05))
+    sale = f'```{amt:,} mesos each```'
+    embed = discord.Embed(
+      title = 'Sale amount',
+      description = sale,
+      colour = 0xFFFF00
+    )
+    embed.set_footer(text='Powered by 씨발')
+    embed.set_thumbnail(url='https://cdn.discordapp.com/emojis/617213926723158056.png?v=1')
+    await ctx.send(embed=embed)
   except ValueError:
     await ctx.send('Invalid parameters used. (Type ;help for more information)')
 
@@ -208,16 +214,6 @@ async def on_message(message):
     if message.content in ['<:Wall:818644951012474901>']:
       await message.channel.send('<:Wall:818644951012474901>')
     await client.process_commands(message)
-
-#here
-
-
-
-
-
-
-
-
 
 keep_alive() 
 client.run(os.environ['token'])
