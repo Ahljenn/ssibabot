@@ -10,41 +10,69 @@ from discord.utils import get
 from keep_alive import keep_alive 
 client = commands.Bot(command_prefix = ';',help_command=None) 
 locale.setlocale(locale.LC_ALL, '') 
-
-async def get_value(file_path, key):
-  expected_values = pandas.read_csv(file_path,
-                            index_col=0,
-                            names=['Flame score','Expected number of flames'])
-  return math.floor(expected_values.iat[key,0])
-
-equip_names = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
-
-@client.command()
-async def flame(ctx, name='', key=0):
-  value = int()
-  if any(name != equips for equips in equip_names):
-    ctx.send('Invalid equip name')
-  if name == 'abso' or name == 'book' or name == 'eyepatch':
-    value = await get_value('./csv/absolab-spellbook-eyepatch.csv', key)
-  elif name == 'arcane':
-    value = await get_value('./csv/arcane.csv', key)
-  elif name == 'cra':
-    value = await get_value('./csv/cra.csv',key)
-  elif name == 'gollux':
-    value = await get_value('./csv/gollux.csv', key)
-  elif name == 'pap':
-    value = await get_value('./csv/pap.csv', key)
-  elif name == 'sw':
-    value = await get_value('./csv/sw.csv', key)
-  await ctx.send(f'{value:,} average flame(s) to hit.')
-
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 flag_times_utc = [11,18,20,21,22] #time-1 
-
 time = datetime.datetime.now
 
+
+async def get_value(file_path, flame_score):
+  """Returns expected number of flames required given the file_path and flame_score."""
+  expected_values = pandas.read_csv(file_path,
+                                    index_col=0,
+                                    names=['Flame score','Expected number of flames'])
+  return math.floor(expected_values.iat[flame_score,0])
+equip_names = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
+
+@client.command()
+async def flame(ctx, name='', flame_score=0):
+  """Returns average eternal flames to beat given desired equip and key."""
+  value = int()
+  try:
+    if flame_score < 0:
+      raise IndexError
+    if any(name == equip for equip in equip_names):
+      if name == 'abso' or name == 'book' or name == 'eyepatch':
+        value = await get_value('./csv/absolab-spellbook-eyepatch.csv', flame_score)
+      elif name == 'arcane':
+        value = await get_value('./csv/arcane.csv', flame_score)
+      elif name == 'cra':
+        value = await get_value('./csv/cra.csv',flame_score)
+      elif name == 'gollux':
+        value = await get_value('./csv/gollux.csv', flame_score)
+      elif name == 'pap':
+        value = await get_value('./csv/pap.csv', flame_score)
+      elif name == 'sw':
+        value = await get_value('./csv/sw.csv', flame_score)
+      await ctx.send(f'{value:,} average flame(s) to hit.')
+    else:
+      raise TypeError
+  except IndexError:
+    await ctx.send('Invalid range. Refer to ;flame-info for valid ranges.')
+  except TypeError:
+    await ctx.send('Invalid equip. Refer to ;flame-info for equips supported.')
+
+@client.command(name='flame-info')
+async def flame_info(ctx):
+  """Returns an embed with flame information, providing associated score ranges, equip names."""
+  embed = discord.Embed(
+    title = 'Flame information',
+    description = ';flame command parameter details',
+    colour = discord.Colour.blue(),
+    timestamp=datetime.datetime.utcnow()
+  )
+  embed.set_footer(text='Powered by 씨발')
+  embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/697998173888708652/706341428896203144/image0.png')
+  embed.add_field(name='Equip (exact) names',value='abso, book, eyepatch, arcane, cra, gollux, pap, sw',inline=False)
+  embed.add_field(name='Ranges for each equip',value='gollux: 0-115\nsw: 0-120\npap: 0-160\ncra:0-160\nabso: 0-180\nbook:0-180\neyepatch0-180\narcane:0-210',inline=False)
+  await ctx.send(embed=embed)
+
+#provide maximum range for each equip
+#provide equip names / parameters
+#provide associated score ranges
+
 async def timer():
+  """Timer set for flag race pings."""
   msg_sent = False
   while not client.is_closed():
     if any(time().hour == flag for flag in flag_times_utc) and time().minute == 50:
@@ -87,9 +115,9 @@ async def on_ready():
     client.loop.create_task(timer())
     print('Bot is deployed...')
 
-#help function
 @client.command()
 async def help(ctx):
+  """"Help function provided to the user."""
   embed = discord.Embed(
     title = 'Help',
     description = '씨바-bot Help Library. These are the following commands everyone can use in this server currently. (The prefix to use commands is ";") Note that the commands are case-sensitive. More functionalities will be added overtime.',
@@ -102,21 +130,27 @@ async def help(ctx):
   embed.add_field(name='General Commands',value='\u200b', inline=False)
   embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g !sale 1800000000 4 1', inline=True)
   embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=True)
+  embed.add_field(name=';flame-info',value='View information for flame commands.',inline=False)
+  embed.add_field(name=';flame <equip> <score>',value='Prints average number of flames required to beat score.')
   await ctx.send(embed=embed)
 
 #calculate sale
+#make this an embed
 @client.command()
 async def sale(ctx,capital=1,pty=1,mvp=0):
+  """Returns the amount of capital for a given sale with initial amount, party members, and mvp status."""
   try:
+    if capital < 0:
+      raise ValueError
     tax = 0.03 if mvp else 0.05
     amt = math.floor(capital * (1-  tax) / (pty - 0.05))
     await ctx.send(f'{amt:,} meso(s) each')
   except ValueError:
     await ctx.send('Invalid parameters used. (Type ;help for more information)')
 
-#display prerun checklist
 @client.command()
 async def checklist(ctx):
+  """Returns boss run checklist to user in an embed."""
   embed = discord.Embed(
     title = 'Pre-run Checklist',
     description = 'Make sure everything is set and ready to go, prior to the boss runs.',
@@ -127,9 +161,9 @@ async def checklist(ctx):
   embed.add_field(name='Please check the following items:',value='- Legion setup\n- Link skills\n- Hyper skills/stats\n- Buff freezers\n- Familiars\n- Pets/pet food\n- Bossing equips/rings\n- Green bind \n- Nodes\n- Monster park extreme potions\n - Guild skills\n- Guild blessing\n- Ursus\n- Cold winter/HT/apple/tengu buffs\n- Candied apples\n- Level 250/275 Fame buff\n- Boss rush pots\n- Alchemy stat potion I - X\n- MVP superpower\n- Echo\n- Familiars setup\n- Weapon tempering',inline=False)
   await ctx.send(embed=embed)
 
-#display schedules
 @client.command()
 async def schedule(ctx):
+  """Returns schedule for party 1 and party 2"""
   embed = discord.Embed(
     title = 'Schedule',
     description = 'Below are the usual times Chilly line and Dan line will run. The run times are tentative - subject to change.',
@@ -142,11 +176,11 @@ async def schedule(ctx):
   embed.add_field(name='GPQ [Sunday]: ',value='7:00PM (PST) | 10:00 PM (EST) | 11:00AM (Monday: AEST)', inline=False)
   await ctx.send(embed=embed)
 
-#reminder boss run ping
+
 @client.command(name='ping')
 @commands.has_any_role('Developer','Board of Directors','administrator')
 async def ping_party(ctx):
-
+  """Returns an embed and pings party 1 and party 2"""
   await checklist(ctx)
   team1 = get(ctx.guild.roles, name = 'Team 1')
   team2 = get(ctx.guild.roles, name = 'Team 2')
