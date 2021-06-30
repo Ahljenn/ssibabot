@@ -4,11 +4,39 @@ import os
 import math
 import datetime
 import asyncio
+import pandas
 from discord.ext import commands
 from discord.utils import get
 from keep_alive import keep_alive 
 client = commands.Bot(command_prefix = ';',help_command=None) 
 locale.setlocale(locale.LC_ALL, '') 
+
+async def get_value(file_path, key):
+  expected_values = pandas.read_csv(file_path,
+                            index_col=0,
+                            names=['Flame score','Expected number of flames'])
+  return math.floor(expected_values.iat[key,0])
+
+equip_names = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
+
+@client.command()
+async def flame(ctx, name='', key=0):
+  value = int()
+  if any(name != equips for equips in equip_names):
+    ctx.send('Invalid equip name')
+  if name == 'abso' or name == 'book' or name == 'eyepatch':
+    value = await get_value('./csv/absolab-spellbook-eyepatch.csv', key)
+  elif name == 'arcane':
+    value = await get_value('./csv/arcane.csv', key)
+  elif name == 'cra':
+    value = await get_value('./csv/cra.csv',key)
+  elif name == 'gollux':
+    value = await get_value('./csv/gollux.csv', key)
+  elif name == 'pap':
+    value = await get_value('./csv/pap.csv', key)
+  elif name == 'sw':
+    value = await get_value('./csv/sw.csv', key)
+  await ctx.send(f'{value:,} average flame(s) to hit.')
 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
@@ -20,8 +48,10 @@ async def timer():
   msg_sent = False
   while not client.is_closed():
     if any(time().hour == flag for flag in flag_times_utc) and time().minute == 50:
+      #checks if current time is flag race time from list
       if not msg_sent:
-        channel = client.get_channel(530284491319672853)
+        channel = client.get_channel(530284491319672853) 
+        #get guild-content channel id and flag_role
         flag_role = get(channel.guild.roles, name = 'Flag Race')
 
         embed = discord.Embed( #first embed for ping 1
@@ -34,7 +64,7 @@ async def timer():
         embed.set_thumbnail(url='https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Blue_flag_waving.svg/951px-Blue_flag_waving.svg.png')
         embed.set_author(name='씨바-bot')
         await channel.send(f'{flag_role.mention} in 10',embed=embed)
-        await asyncio.sleep(540) #wait 9 minutes
+        await asyncio.sleep(9*60) #wait 9 minutes
 
         embed2 = discord.Embed( #second embed for ping 2
           title = 'Flag Race',
@@ -53,7 +83,7 @@ async def timer():
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;help'))
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | !help'))
     client.loop.create_task(timer())
     print('Bot is deployed...')
 
@@ -70,7 +100,7 @@ async def help(ctx):
   embed.set_author(name='씨바-bot')
 
   embed.add_field(name='General Commands',value='\u200b', inline=False)
-  embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g ;sale 1800000000 4 1', inline=True)
+  embed.add_field(name=';sale [meso amount] [party size] [mvp status]',value='Calculate sale given initial amount, number of members, and mvp status e.g !sale 1800000000 4 1', inline=True)
   embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=True)
   await ctx.send(embed=embed)
 
@@ -96,7 +126,6 @@ async def checklist(ctx):
   embed.set_thumbnail(url='https://cdn0.iconfinder.com/data/icons/thin-line-color-2/21/27-512.png')
   embed.add_field(name='Please check the following items:',value='- Legion setup\n- Link skills\n- Hyper skills/stats\n- Buff freezers\n- Familiars\n- Pets/pet food\n- Bossing equips/rings\n- Green bind \n- Nodes\n- Monster park extreme potions\n - Guild skills\n- Guild blessing\n- Ursus\n- Cold winter/HT/apple/tengu buffs\n- Candied apples\n- Level 250/275 Fame buff\n- Boss rush pots\n- Alchemy stat potion I - X\n- MVP superpower\n- Echo\n- Familiars setup\n- Weapon tempering',inline=False)
   await ctx.send(embed=embed)
-
 
 #display schedules
 @client.command()
@@ -132,20 +161,29 @@ async def ping_party(ctx):
   await ctx.send(embed=embed)
   await ctx.send(f'{team1.mention,team2.mention}')
 
-
 #check message
 @client.event
 async def on_message(message):
   if message.author != client.user: #if not the bot
     if message.content.lower() in ['gary','yena','sus']:
       await message.channel.send('sus')
-    if message.content.lower() in ['kevin','kev']:
+    if message.content.lower() in ['kevin','kev','<:boomerKevin:859524709146165338>']:
       await message.channel.send('<:kevin:845474836271595530>')
-    if message.content.lower() in ['ssibal','sibal']:
+    if message.content.lower() in ['ssibal','sibal','sibai','ssibai']:
       await message.channel.send('noma')
     if message.content in ['<:Wall:818644951012474901>']:
       await message.channel.send('<:Wall:818644951012474901>')
     await client.process_commands(message)
+
+#here
+
+
+
+
+
+
+
+
 
 keep_alive() 
 client.run(os.environ['token'])
