@@ -7,14 +7,22 @@ import asyncio
 import pandas
 from discord.ext import commands
 from discord.utils import get
-from keep_alive import keep_alive 
+from keep_alive import keep_alive
+from pet import get_petites
+from pet import get_blacks
 client = commands.Bot(command_prefix = ';',help_command=None) 
 locale.setlocale(locale.LC_ALL, '') 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 flag_times_utc = [11,18,20,21,22] #time-1 
-equip_names = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
-time = datetime.datetime.now
+equip_types = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
+checklist_items = ['Legion setup','Link skills','Hyper skills/stats', 'Buff freezers', 'Familiars','Pets/pet food','Bossing equips/rings','Green bind', 'Nodes','Monster park extreme potions','Guild skills','Guild blessing','Ursus','Cold winter/HT/apple/tengu buffs','Candied apples','Level 250/275 Fame buff','Boss rush pots','Alchemy stat potion I - X','MVP superpower','Echo','Familiars setup','Weapon tempering']
+
+async def build_string(items):
+  ss = '' 
+  for item in items:
+    ss += '- '+ item + '\n'
+  return ss
 
 async def get_value(file_path, flame_score):
   """Returns expected number of flames required given the file_path and flame_score."""
@@ -22,26 +30,26 @@ async def get_value(file_path, flame_score):
                                     index_col=0,
                                     names=['Flame score','Expected number of flames'])
   return math.floor(expected_values.iat[flame_score,0])
-  
+
 @client.command()
-async def flame(ctx, name='', flame_score=0):
-  """Returns average eternal flames to beat given desired equip and key."""
+async def flame(ctx, equip_type='', flame_score=0):
+  """Returns average number of eternal flames to beat flame_score on equip_type."""
   value = int()
   try:
     if flame_score < 0:
       raise IndexError
-    if any(name == equip for equip in equip_names):
-      if name == 'abso' or name == 'book' or name == 'eyepatch':
+    if any(equip_type == equip for equip in equip_types):
+      if equip_type == 'abso' or equip_type == 'book' or equip_type == 'eyepatch':
         value = await get_value('./csv/absolab-spellbook-eyepatch.csv', flame_score)
-      elif name == 'arcane':
+      elif equip_type == 'arcane':
         value = await get_value('./csv/arcane.csv', flame_score)
-      elif name == 'cra':
+      elif equip_type == 'cra':
         value = await get_value('./csv/cra.csv',flame_score)
-      elif name == 'gollux':
+      elif equip_type == 'gollux':
         value = await get_value('./csv/gollux.csv', flame_score)
-      elif name == 'pap':
+      elif equip_type == 'pap':
         value = await get_value('./csv/pap.csv', flame_score)
-      elif name == 'sw':
+      elif equip_type == 'sw':
         value = await get_value('./csv/sw.csv', flame_score)
       await ctx.send(f'{value:,} average flame(s) to hit.')
     else:
@@ -50,6 +58,32 @@ async def flame(ctx, name='', flame_score=0):
     await ctx.send('Invalid range. Refer to ;flame-info for valid ranges.')
   except TypeError:
     await ctx.send('Invalid equip. Refer to ;flame-info for equips supported.')
+
+@client.command()
+async def vac(ctx, n=0):
+  """Returns the results of obtaining n Petite Luna Pets"""
+  try:
+    if (n < 1) or (n > 20):
+      raise Exception
+    results = get_petites(n)
+    await ctx.send(results)
+  except ValueError:
+    await ctx.send(f'Invald number of Petite Luna Pets to go for: {n}')
+  except Exception:
+    await ctx.send('National Gambling Hotline: 1-800-522-4700')
+
+@client.command()
+async def black(ctx, n=0):
+  """Returns results of obtaining n Wonder Black Luna Pets"""
+  try:
+    if (n < 1) or (n > 20):
+      raise Exception
+    results = get_blacks(n)
+    await ctx.send(results)
+  except ValueError:
+    await ctx.send(f'Invald number of Petite Luna Pets to go for: {n}')
+  except Exception:
+    await ctx.send('National Gambling Hotline: 1-800-522-4700')
 
 @client.command(name='flame-info')
 async def flame_info(ctx):
@@ -66,10 +100,7 @@ async def flame_info(ctx):
   embed.add_field(name='Ranges for each equip',value='gollux: 0-115\nsw: 0-120\npap: 0-160\ncra: 0-160\nabso: 0-180\nbook: 0-180\neyepatch: 0-180\narcane: 0-210',inline=False)
   await ctx.send(embed=embed)
 
-#provide maximum range for each equip
-#provide equip names / parameters
-#provide associated score ranges
-
+time = datetime.datetime.now
 async def timer():
   """Timer set for flag race pings."""
   msg_sent = False
@@ -110,7 +141,7 @@ async def timer():
 
 @client.event
 async def on_ready():
-    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | !help'))
+    await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;help'))
     client.loop.create_task(timer())
     print('Bot is deployed...')
 
@@ -127,10 +158,18 @@ async def help(ctx):
   embed.set_author(name='씨바-bot')
 
   embed.add_field(name='General Commands',value='\u200b', inline=False)
-  embed.add_field(name=';sale <meso amount> <party size> <mvp status>',value='Calculate sale given initial amount, number of members, and mvp status e.g !sale 1800000000 4 1', inline=False)
-  embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=True)
-  embed.add_field(name=';flame-info',value='View information for flame commands.',inline=True)
-  embed.add_field(name=';flame <equip> <score>',value='Prints average number of eternal flames required to beat score.')
+  embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=False)
+  embed.add_field(name=';sale <meso amount> <party size> <mvp status>',value='Calculate sale given initial amount, number of members, and mvp status. e.g: ```;sale 1,800,000,000 4```\nIf you have **MVP**, add a 1 to the end parameter (decreased tax). e.g: ```;sale 1,800,000,000 4 1```', inline=False)
+
+  #Flame fields
+  embed.add_field(name=';flame <equip> <score>',value='Prints average number of eternal flames required to beat *score.* e.g: ```;flame gollux 70```',inline=False)
+  embed.add_field(name=';flame-info',value='View information for flame commands.',inline=False)
+
+  #Vac fields
+  embed.add_field(name =';vac <n>',value= 'View the results of obtaining the given amount of *Petite Lunas.* (1-20) e.g: ```;vac 10```',inline=True)
+  embed.add_field(name =';black <n>',value= 'View the results of obtaining the given amount of *Wonder Black Lunas.* (1-20) e.g: ```;black 10```',inline=True)
+
+
   await ctx.send(embed=embed)
 
 @client.command()
@@ -164,7 +203,8 @@ async def checklist(ctx):
   )
   embed.set_footer(text='Powered by 씨발')
   embed.set_thumbnail(url='https://cdn0.iconfinder.com/data/icons/thin-line-color-2/21/27-512.png')
-  embed.add_field(name='Please check the following items:',value='- Legion setup\n- Link skills\n- Hyper skills/stats\n- Buff freezers\n- Familiars\n- Pets/pet food\n- Bossing equips/rings\n- Green bind \n- Nodes\n- Monster park extreme potions\n - Guild skills\n- Guild blessing\n- Ursus\n- Cold winter/HT/apple/tengu buffs\n- Candied apples\n- Level 250/275 Fame buff\n- Boss rush pots\n- Alchemy stat potion I - X\n- MVP superpower\n- Echo\n- Familiars setup\n- Weapon tempering',inline=False)
+  checklist = await build_string(checklist_items)
+  embed.add_field(name='Please check the following items:',value=checklist,inline=False)
   await ctx.send(embed=embed)
 
 @client.command()
