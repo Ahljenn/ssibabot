@@ -253,8 +253,15 @@ def get_petites(n=1):
         open()
         fuse()
     sell_not_petite()
-    return f'Petite Luna Pets: {n}\nInitial Total Cost: {nx_cost:,} NX/MP\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
-    #im thinking instead of returning a string here, we can return a list of variables so we can print it to using a discord embed - same for get_blacks()
+    results = {
+      'Petite Luna Pets' : n,
+      'Initial Total Cost' : (format(nx_cost,',d')),
+      'Sales' : (format(round(mesos),',d')),
+      'Adjust Total Cost' : (format(round(nx_cost-mp_balance),',d')),
+      'Adjust Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
+    }
+    return results
+    #return f'Petite Luna Pets: {n}\nInitial Total Cost: {nx_cost:,} NX/MP\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
 
 
 def get_blacks(n=1):
@@ -262,4 +269,12 @@ def get_blacks(n=1):
     while (blacks < n):
         open()
     sell_not_black()
-    return f'Wonder Black Pets: {n}\nWisp\'s Wondrous Wonderberry x10 Package: {packs}\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
+    results = {
+      'Wonder Black Pets' : n,
+      'Wondrous Wonderberry x10 Package' : packs,
+      'Sales' : (format(round(mesos),',d')),
+      'Adjust Total Cost' : (format(round(nx_cost-mp_balance),',d')),
+      'Adjust Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
+    }
+    return results
+    #return f'Wonder Black Pets: {n}\nWisp\'s Wondrous Wonderberry x10 Package: {packs}\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'

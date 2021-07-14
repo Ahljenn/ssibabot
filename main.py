@@ -65,21 +65,49 @@ async def vac(ctx, n=0):
   try:
     if (n < 1) or (n > 20):
       raise Exception
-    results = get_petites(n)
-    await ctx.send(results)
+    results = get_petites(n) #variable that holds a list of items
+    embed = discord.Embed(
+      title = 'Vac Pets',
+      description = f'Results of obtaining **{n}** Petite Luna Pet(s)',
+      colour = discord.Colour.random()
+    )
+    embed.set_footer(text='Powered by 씨발')
+    embed.set_thumbnail(url='https://www.freeiconspng.com/thumbs/eggplant-png/high-resolution-eggplant-png-clipart-3.png')
+    for i, (k,v) in  enumerate (results.items()):
+      if i > 0:
+        if(i == 1 or i == 3 or i == 4):
+          embed.add_field(name=k,value = f'```{v} NX/MP```',inline=False)
+        else:
+          embed.add_field(name=k,value = f'```{v} mesos```',inline=False)
+    await ctx.send(embed=embed)
   except ValueError:
     await ctx.send(f'Invald number of Petite Luna Pets to go for: {n}')
   except Exception:
-    await ctx.send('National Gambling Hotline: 1-800-522-4700')
+     await ctx.send('National Gambling Hotline: 1-800-522-4700')
 
 @client.command()
 async def black(ctx, n=0):
-  """Returns results of obtaining n Wonder Black Luna Pets"""
+  """Returns results of obtaining n Wonder Black Luna Pet(s)"""
   try:
     if (n < 1) or (n > 20):
       raise Exception
     results = get_blacks(n)
-    await ctx.send(results)
+    embed = discord.Embed(
+      title = 'Wonder Black Pets',
+      description = f'Results of obtaining **{n}** Wonder Black Pets',
+      colour = discord.Colour.random()
+    )
+    embed.set_footer(text='Powered by 씨발')
+    embed.set_thumbnail(url='https://www.freeiconspng.com/thumbs/eggplant-png/high-resolution-eggplant-png-clipart-3.png')
+    for i, (k,v) in  enumerate (results.items()):
+      if i > 0:
+        if i == 1:
+          embed.add_field(name=k,value = f'```{v} packages```',inline=False)
+        elif(i == 3 or i == 4):
+          embed.add_field(name=k,value = f'```{v} NX/MP```',inline=False)
+        else:
+          embed.add_field(name=k,value = f'```{v} mesos```',inline=False)
+    await ctx.send(embed=embed)
   except ValueError:
     await ctx.send(f'Invald number of Petite Luna Pets to go for: {n}')
   except Exception:
