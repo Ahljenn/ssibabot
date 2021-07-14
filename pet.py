@@ -254,6 +254,7 @@ def get_petites(n=1):
         fuse()
     sell_not_petite()
     return f'Petite Luna Pets: {n}\nInitial Total Cost: {nx_cost:,} NX/MP\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
+    #im thinking instead of returning a string here, we can return a list of variables so we can print it to using a discord embed - same for get_blacks()
 
 
 def get_blacks(n=1):
