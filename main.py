@@ -60,11 +60,14 @@ async def flame(ctx, equip_type='', flame_score=0):
     await ctx.send('Invalid equip. Refer to ;flame-info for equips supported.')
 
 @client.command()
-async def vac(ctx, n=0):
+async def vac(ctx, n):
   """Returns the results of obtaining n Petite Luna Pets"""
   try:
-    if (n < 1) or (n > 20):
-      raise Exception
+    n = int(n)
+    if n > 20:
+      raise IndexError
+    if n < 1:
+      raise ValueError
     results = get_petites(n) #variable that holds a list of items
     embed = discord.Embed(
       title = 'Vac Pets',
@@ -82,15 +85,18 @@ async def vac(ctx, n=0):
     await ctx.send(embed=embed)
   except ValueError:
     await ctx.send(f'Invald number of Petite Luna Pets to go for: {n}')
-  except Exception:
+  except IndexError:
      await ctx.send('National Gambling Hotline: 1-800-522-4700')
 
 @client.command()
-async def black(ctx, n=0):
+async def black(ctx, n):
   """Returns results of obtaining n Wonder Black Luna Pet(s)"""
   try:
-    if (n < 1) or (n > 20):
-      raise Exception
+    n = int(n)
+    if n > 20:
+      raise IndexError
+    if n < 1:
+      raise ValueError
     results = get_blacks(n)
     embed = discord.Embed(
       title = 'Wonder Black Pets',
@@ -110,7 +116,7 @@ async def black(ctx, n=0):
     await ctx.send(embed=embed)
   except ValueError:
     await ctx.send(f'Invald number of Petite Luna Pets to go for: {n}')
-  except Exception:
+  except IndexError:
     await ctx.send('National Gambling Hotline: 1-800-522-4700')
 
 @client.command(name='flame-info')
@@ -203,8 +209,8 @@ async def help(ctx):
 @client.command()
 async def sale(ctx,capital,pty=1,mvp=0):
   """Returns the amount of capital for a given sale with initial amount, party members, and mvp status."""
-  capital = int(capital.replace(',',''))
   try:
+    capital = int(capital.replace(',',''))
     if capital <= 0 or pty <= 1:
       raise ValueError
     tax = 0.03 if mvp else 0.05
