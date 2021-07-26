@@ -75,7 +75,7 @@ async def vac(ctx, n):
       colour = discord.Colour.random()
     )
     embed.set_footer(text='Powered by 씨발')
-    embed.set_thumbnail(url='https://www.freeiconspng.com/thumbs/eggplant-png/high-resolution-eggplant-png-clipart-3.png')
+    embed.set_thumbnail(url='https://cdn.discordapp.com/attachments/265677548497797130/865717489719967814/wisp-new.png')
     for i, (k,v) in  enumerate (results.items()):
       if i > 0:
         if(i == 1 or i == 3 or i == 4):

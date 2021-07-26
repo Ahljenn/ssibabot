@@ -2,12 +2,12 @@ from enum import Enum
 import random
 
 cheap_cost = 3_333_333
-black_cost = 2_100_000_000
-sweet_cost = 2_850_000_000
+black_cost = 2_000_000_000
+sweet_cost = 2_500_000_000
 dream_cost = 150_000_000
 petite_cost = 18_000_000_000
-key_cost = 4_000_000_000
-cookie_cost = 750_000
+key_cost = 5_000_000_000
+cookie_cost = 1_600_000
 water_cost = 60_000_000
 mp_ratio = 18 * .95
 
@@ -257,8 +257,8 @@ def get_petites(n=1):
       'Petite Luna Pets' : n,
       'Initial Total Cost' : (format(nx_cost,',d')),
       'Sales' : (format(round(mesos),',d')),
-      'Adjust Total Cost' : (format(round(nx_cost-mp_balance),',d')),
-      'Adjust Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
+      'Adjusted Total Cost' : (format(round(nx_cost-mp_balance),',d')),
+      'Adjusted Average Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
     }
     return results
     #return f'Petite Luna Pets: {n}\nInitial Total Cost: {nx_cost:,} NX/MP\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
@@ -271,10 +271,10 @@ def get_blacks(n=1):
     sell_not_black()
     results = {
       'Wonder Black Pets' : n,
-      'Wondrous Wonderberry x10 Package' : packs,
+      'Wondrous Wonderberry x10 Package(s)' : packs,
       'Sales' : (format(round(mesos),',d')),
-      'Adjust Total Cost' : (format(round(nx_cost-mp_balance),',d')),
-      'Adjust Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
+      'Adjusted Total Cost' : (format(round(nx_cost-mp_balance),',d')),
+      'Adjusted Average Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
     }
     return results
     #return f'Wonder Black Pets: {n}\nWisp\'s Wondrous Wonderberry x10 Package: {packs}\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
