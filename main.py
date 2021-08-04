@@ -193,7 +193,7 @@ async def help(ctx):
 
   embed.add_field(name='General Commands',value='\u200b', inline=False)
   embed.add_field(name=';checklist',value='View the pre-run checklist that you should go through prior to runs', inline=False)
-  embed.add_field(name=';sale <meso amount> <party size> <mvp status>',value='Calculate sale given initial amount, number of members, and mvp status. e.g: ```;sale 1,800,000,000 4```\nIf you have **MVP**, add a 1 to the end parameter (decreased tax). e.g: ```;sale 1,800,000,000 4 1```', inline=False)
+  embed.add_field(name=';sale <meso amount> <party size> <mvp status>',value='Calculate sale given initial amount, number of members, and mvp status. e.g: ```;sale 1,800,000,000 ```\nIf you have **MVP**, add a 1 to the end parameter (decreased tax). e.g: ```;sale 1,800,000,000 4 mvp```', inline=False)
 
   #Flame fields
   embed.add_field(name=';flame <equip> <score>',value='Prints average number of eternal flames required to beat *score.* e.g: ```;flame gollux 70```',inline=False)
@@ -207,13 +207,19 @@ async def help(ctx):
   await ctx.send(embed=embed)
 
 @client.command()
-async def sale(ctx,capital,pty=1,mvp=0):
+async def sale(ctx,capital,pty=1,mvp='',mvp_state=False):
   """Returns the amount of capital for a given sale with initial amount, party members, and mvp status."""
   try:
     capital = int(capital.replace(',',''))
     if capital <= 0 or pty <= 1:
       raise ValueError
-    tax = 0.03 if mvp else 0.05
+    if not mvp:
+      mvp_state = False
+    elif mvp == 'mvp':
+      mvp_state = True
+    else:
+      raise ValueError
+    tax = 0.03 if mvp_state else 0.05
     amt = math.floor(capital * (1 -  tax) / (pty - 0.05))
     sale = f'```{amt:,} mesos each```'
     embed = discord.Embed(
