@@ -10,6 +10,8 @@ from discord.utils import get
 from keep_alive import keep_alive
 from pet import get_petites
 from pet import get_blacks
+from scraper import xur_link, find_xur, find_items, xur_data
+
 client = commands.Bot(command_prefix = ';',help_command=None) 
 locale.setlocale(locale.LC_ALL, '') 
 siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/845048535023747102/image0.jpg'
@@ -262,6 +264,28 @@ async def schedule(ctx):
   embed.add_field(name='GPQ [Sunday]: ',value='7:00PM (PST) | 10:00 PM (EST) | 11:00AM (Monday: AEST)', inline=False)
   await ctx.send(embed=embed)
 
+@client.command()
+async def xur(ctx):
+  """Prints Xur location and item information."""
+  find_xur()
+  find_items()
+  embed = discord.Embed(
+    title = 'Xur',
+    description = '*Xur information*',
+    colour = discord.Colour.gold()
+  )
+  embed.set_author(name='씨바-bot')
+  embed.set_thumbnail(url='https://wherethefuckisxur.com/images/engram.png')
+  if xur_data: 
+    for i in range(1, len(xur_data)):
+      embed.add_field(name='\u200b',value=xur_data[i],inline=False)
+    embed.set_image(url=xur_data[0])
+    embed.add_field(name='For more information, see:',value=xur_link(),inline=False)
+    print(xur_data)
+  else: # Xur dissapears after Thursday reset
+    embed.add_field(name='\u200b',value="```Xur is currently not in the solar system.```")
+  await ctx.send(f'{ctx.author.mention}',embed=embed)
+
 
 @client.command(name='ping')
 @commands.has_any_role('Developer','Board of Directors','administrator')
@@ -297,3 +321,13 @@ async def on_message(message):
 
 keep_alive() 
 client.run(os.environ['token'])
+
+
+#1. Create generalized embed async function "def build_reminder" for task_loop()
+# - pass parameters depending on 
+# - monthly reset utc, mvp reminder
+
+#2. Change client to bot
+
+#3. Xur web scrapper
+

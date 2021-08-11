@@ -5,11 +5,11 @@ cheap_cost = 3_333_333
 black_cost = 2_000_000_000
 sweet_cost = 2_500_000_000
 dream_cost = 150_000_000
-petite_cost = 18_000_000_000
+petite_cost = 20_000_000_000
 key_cost = 5_000_000_000
 cookie_cost = 1_600_000
 water_cost = 60_000_000
-mp_ratio = 18 * .95
+mp_ratio = 17 * .95
 
 
 class Items(Enum):
@@ -184,25 +184,18 @@ def sell_not_petite():
     global mp_balance
     global mp_ratio
     if cheaps > 0:
-        #print_item("Cheaps", cheaps)
         mesos += cheaps * cheap_cost
     if blacks > 0:
-        #print_item("Blacks", blacks)
         mesos += blacks * black_cost
     if sweets > 0:
-        #print_item("Sweets", sweets)
         mesos += sweets * sweet_cost
     if dreams > 0:
-        #print_item("Dreams", dreams)
         mesos += dreams * dream_cost
     if keys > 0:
-        #print_item("Keys", keys)
         mesos += keys * key_cost
     if cookies > 0:
-        #print_item("Cookies", cookies)
         mesos += cookies * cookie_cost
     if waters > 0:
-        #print_item("Waters", waters)
         mesos += waters * water_cost
     mp_balance = mesos / 1_000_000 * mp_ratio
 
@@ -220,25 +213,18 @@ def sell_not_black():
     global mp_balance
     global mp_ratio
     if cheaps > 0:
-        #print_item("Cheaps", cheaps)
         mesos += cheaps * cheap_cost
     if sweets > 0:
-        #print_item("Sweets", sweets)
         mesos += sweets * sweet_cost
     if dreams > 0:
-        #print_item("Dreams", dreams)
         mesos += dreams * dream_cost
     if keys > 0:
-        #print_item("Keys", keys)
         mesos += keys * key_cost
     if cookies > 0:
-        #print_item("Cookies", cookies)
         mesos += cookies * cookie_cost
     if waters > 0:
-        #print_item("Waters", waters)
         mesos += waters * water_cost
     if petites > 0:
-        #print_item("Petites", petites)
         mesos += petites * petite_cost
     mp_balance = mesos / 1_000_000 * mp_ratio
 
@@ -261,7 +247,6 @@ def get_petites(n=1):
       'Adjusted Average Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
     }
     return results
-    #return f'Petite Luna Pets: {n}\nInitial Total Cost: {nx_cost:,} NX/MP\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
 
 
 def get_blacks(n=1):
@@ -277,4 +262,3 @@ def get_blacks(n=1):
       'Adjusted Average Pet Cost' : (format(round(((nx_cost-mp_balance)/n)),',d'))
     }
     return results
-    #return f'Wonder Black Pets: {n}\nWisp\'s Wondrous Wonderberry x10 Package: {packs}\nSales: {mesos:,} mesos\nAdjusted Total Cost: {round(nx_cost-mp_balance):,} NX/MP\nAdjusted Pet Cost: {round((nx_cost-mp_balance)/n):,} NX/MP'
