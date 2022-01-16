@@ -5,6 +5,7 @@ import math
 import datetime
 import asyncio
 import pandas
+from clown import generate_insult
 from discord.ext import commands
 from discord.utils import get
 from keep_alive import keep_alive
@@ -18,7 +19,7 @@ siba_img = 'https://cdn.discordapp.com/attachments/838627115326636082/8450485350
 siba_img_landscape = 'https://cdn.discordapp.com/attachments/836716455072235541/845093553821581363/siba.jpg'
 flag_times_utc = [11,18,20,21,22] #time-1 
 equip_types = ['abso','book','eyepatch','arcane','cra','gollux','pap','sw']
-checklist_items = ['Legion setup','Link skills','Hyper skills/stats', 'Buff freezers', 'Familiars','Pets/pet food','Bossing equips/rings','Green bind', 'Nodes','Monster park extreme potions','Guild skills','Guild blessing','Ursus','Cold winter/HT/apple/tengu buffs','Candied apples','Level 250/275 Fame buff','Boss rush pots','Alchemy stat potion I - X','MVP superpower','Echo','Familiars setup','Weapon tempering']
+checklist_items = ['Legion setup','Link skills','Hyper skills/stats', 'Buff freezers', 'Familiars','Pets/pet food','Bossing equips/rings','Takeno\'s Blessing', 'Nodes','Monster park extreme potions','Guild skills','Guild blessing','Ursus','Cold winter/apple/tengu buffs','Candied apples','Level 250/275 Fame buff','Boss rush pots','Alchemy stat potion I - X','MVP superpower','Echo','Familiars setup','Weapon tempering']
 
 async def build_string(items):
   ss = '' 
@@ -178,7 +179,7 @@ async def timer():
 @client.event
 async def on_ready():
     await client.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name='you sleep | ;help'))
-    client.loop.create_task(timer())
+    #client.loop.create_task(timer())
     print('Bot is deployed...')
 
 @client.command()
@@ -248,6 +249,17 @@ async def checklist(ctx):
   checklist = await build_string(checklist_items)
   embed.add_field(name='Please check the following items:',value=checklist,inline=False)
   await ctx.send(embed=embed)
+
+@client.command(name='clown')
+async def clown(ctx, name=''):
+  '''Insult user given a string parameter as the name'''
+  try:
+    if not name:
+      raise ValueError
+    insult = generate_insult(name)
+    await ctx.send(insult)
+  except ValueError:
+    await ctx.send('I should clown *you*  for not giving a name idiot')
 
 @client.command()
 async def schedule(ctx):
